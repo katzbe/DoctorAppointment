@@ -1,9 +1,69 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StackActions, useNavigation } from '@react-navigation/native';
+import {
+  Button,
+  Dimensions,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+
+import useStore from '../store/useStore';
+import { useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const { width } = Dimensions.get('window');
 
 export default function LoginScreen() {
+  const navigation = useNavigation();
+  const {
+    userName,
+    setUserName,
+    setSelectedDateSlot,
+    setSelectedMedicalSpecialty,
+    setSelectedTime,
+  } = useStore(state => state);
+
+  const [password, setPassword] = useState('');
+
+  async function handleSubmit() {
+    const appointment = await AsyncStorage.getItem('appointment');
+    if (!appointment) {
+      navigation.dispatch(StackActions.replace('AppointmentBooking'));
+      return;
+    }
+
+    const parsedAppointment = JSON.parse(appointment);
+
+    setSelectedDateSlot(parsedAppointment.selectedDateSlot);
+    setSelectedMedicalSpecialty(parsedAppointment.selectedMedicalSpecialty);
+    setSelectedTime(parsedAppointment.selectedTime);
+
+    navigation.dispatch(StackActions.replace('ExistingAppointmentManagement'));
+  }
+
   return (
     <View style={styles.container}>
-      <Text>Login screen</Text>
+      <View style={styles.card}>
+        <Text style={styles.title}>ברוך הבא</Text>
+        <TextInput
+          style={styles.input}
+          value={userName}
+          placeholder="שם משתמש"
+          onChangeText={text => setUserName(text)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="סיסמה"
+          value={password}
+          onChangeText={text => setPassword(text)}
+        />
+        <Button
+          disabled={!userName || !password}
+          title="כניסה"
+          onPress={handleSubmit}
+        />
+      </View>
     </View>
   );
 }
@@ -13,5 +73,35 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  card: {
+    width: width * 0.85,
+    backgroundColor: '#fff',
+    padding: 24,
+    borderWidth: 1,
+    borderColor: '#F3F3F3',
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 24,
+    textAlign: 'center',
+    color: '#333',
+  },
+  input: {
+    height: 50,
+    backgroundColor: '#F5F7FA',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    marginBottom: 16,
+    fontSize: 16,
+    color: '#333',
+    textAlign: 'right',
   },
 });
