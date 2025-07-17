@@ -7,7 +7,7 @@ import DoctorCalendarScreen from '../screens/DoctorCalendarScreen';
 import AppointmentSummaryScreen from '../screens/AppointmentSummaryScreen';
 import ExistingAppointmentManagementScreen from '../screens/ExistingAppointmentManagementScreen';
 
-const RootStack = createNativeStackNavigator({
+export const RootStack = createNativeStackNavigator({
   initialRouteName: 'Login',
   screenOptions: {
     contentStyle: {

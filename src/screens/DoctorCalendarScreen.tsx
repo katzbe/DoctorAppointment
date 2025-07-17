@@ -1,16 +1,10 @@
-import {
-  Button,
-  FlatList,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import Picker from '../components/Picker';
 import { RECOMMENDED_CALENDARS } from '../data';
 import useStore from '../store/useStore';
+import Button from '../components/Button';
 
 export default function DoctorCalendarScreen() {
   const navigation = useNavigation();
@@ -29,7 +23,13 @@ export default function DoctorCalendarScreen() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.specialtyLabelCard}>
+        <Text style={styles.specialtyLabelText}>
+          {selectedMedicalSpecialty?.label}
+        </Text>
+      </View>
       <FlatList
+        inverted
         showsHorizontalScrollIndicator={false}
         style={styles.datePicker}
         contentContainerStyle={styles.datePickerContainer}
@@ -38,6 +38,7 @@ export default function DoctorCalendarScreen() {
         keyExtractor={({ date }) => date}
         renderItem={({ item }) => (
           <Pressable
+            style={styles.dataPickerItem}
             onPress={() => {
               setSelectedDateSlot(item);
               setSelectedTime('');
@@ -57,10 +58,9 @@ export default function DoctorCalendarScreen() {
           />
         ))}
       </View>
-      <Text>{selectedMedicalSpecialty?.label}</Text>
-      <Text>{selectedMedicalSpecialty?.value}</Text>
       <Button
-        title="זימון תור"
+        containerStyle={styles.button}
+        text="זימון תור"
         disabled={!selectedDateSlot || !selectedTime}
         onPress={() => navigation.navigate('AppointmentSummary')}
       />
@@ -74,10 +74,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
   },
-  datePicker: { maxHeight: 60, marginVertical: 20 },
+  specialtyLabelCard: {
+    padding: 20,
+    width: '100%',
+    backgroundColor: '#F3FAF8',
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  specialtyLabelText: {
+    fontSize: 18,
+    color: '#333',
+  },
+  datePicker: {
+    maxHeight: 80,
+    marginVertical: 20,
+  },
+  dataPickerItem: {
+    padding: 10,
+    backgroundColor: '#C0E8FF',
+    borderRadius: 15,
+  },
   datePickerContainer: {
     gap: 15,
+    flexGrow: 1,
     paddingVertical: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  timePicker: {},
+  button: { width: 200 },
+  timePicker: { gap: 10, marginBottom: 20 },
 });

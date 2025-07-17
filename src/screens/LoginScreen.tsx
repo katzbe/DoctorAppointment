@@ -1,16 +1,10 @@
 import { StackActions, useNavigation } from '@react-navigation/native';
-import {
-  Button,
-  Dimensions,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { Dimensions, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import useStore from '../store/useStore';
 import { useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Button from '../components/Button';
 
 const { width } = Dimensions.get('window');
 
@@ -59,8 +53,9 @@ export default function LoginScreen() {
           onChangeText={text => setPassword(text)}
         />
         <Button
+          variant="primary"
           disabled={!userName || !password}
-          title="כניסה"
+          text="כניסה"
           onPress={handleSubmit}
         />
       </View>
@@ -81,11 +76,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#F3F3F3',
     borderRadius: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 8,
+    boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.15)',
   },
   title: {
     fontSize: 20,

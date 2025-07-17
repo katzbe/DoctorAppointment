@@ -1,8 +1,10 @@
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 
 import useStore from '../store/useStore';
+import Button from '../components/Button';
+import SummaryCard from '../components/SummaryCard';
 
 export default function AppointmentSummaryScreen() {
   const navigation = useNavigation();
@@ -28,19 +30,16 @@ export default function AppointmentSummaryScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>
-        <Text style={styles.textBold}>מקצוע רפואי: </Text>
-        {selectedMedicalSpecialty?.label}
-      </Text>
-      <Text style={styles.text}>
-        <Text style={styles.textBold}>תאריך ושעה: </Text>
-        {selectedDateSlot?.date} {selectedTime}
-      </Text>
-      <Text style={styles.text}>
-        <Text style={styles.textBold}>שם המטופל: </Text>
-        {userName}
-      </Text>
-      <Button title="אישור הזימון" onPress={handleApproveClick} />
+      <SummaryCard
+        medicalSpecialty={selectedMedicalSpecialty?.label || ''}
+        dateSlot={`${selectedDateSlot?.date} ${selectedTime}`}
+        patientName={userName}
+      />
+      <Button
+        containerStyle={styles.button}
+        text="אישור הזימון"
+        onPress={handleApproveClick}
+      />
     </View>
   );
 }
@@ -49,11 +48,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    alignItems: 'center',
   },
-  text: {
-    textAlign: 'center',
-  },
-  textBold: {
-    fontWeight: '700',
-  },
+  button: { width: 200, marginTop: 25 },
 });

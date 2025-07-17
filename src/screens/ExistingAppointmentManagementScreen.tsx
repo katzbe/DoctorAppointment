@@ -1,7 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Alert, Button, StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 import useStore from '../store/useStore';
 import { CommonActions, useNavigation } from '@react-navigation/native';
+import SummaryCard from '../components/SummaryCard';
+import Button from '../components/Button';
 
 export default function ExistingAppointmentManagementScreen() {
   const navigation = useNavigation();
@@ -39,19 +41,16 @@ export default function ExistingAppointmentManagementScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>
-        <Text style={styles.textBold}>מקצוע רפואי: </Text>
-        {selectedMedicalSpecialty?.label}
-      </Text>
-      <Text style={styles.text}>
-        <Text style={styles.textBold}>תאריך ושעה: </Text>
-        {selectedDateSlot?.date} {selectedTime}
-      </Text>
-      <Text style={styles.text}>
-        <Text style={styles.textBold}>שם המטופל: </Text>
-        {userName}
-      </Text>
-      <Button title="ביטול תור" onPress={handleCancelAppointment} />
+      <SummaryCard
+        medicalSpecialty={selectedMedicalSpecialty?.label || ''}
+        dateSlot={`${selectedDateSlot?.date} ${selectedTime}`}
+        patientName={userName}
+      />
+      <Button
+        text="ביטול תור"
+        variant="danger"
+        onPress={handleCancelAppointment}
+      />
     </View>
   );
 }
@@ -59,6 +58,9 @@ export default function ExistingAppointmentManagementScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    alignItems: 'center',
+    padding: 20,
+    gap: 20,
   },
   text: {
     textAlign: 'center',

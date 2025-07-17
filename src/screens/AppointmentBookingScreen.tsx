@@ -1,9 +1,10 @@
-import { Button, StyleSheet, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import Picker from '../components/Picker';
 import { MEDICAL_SPECIALTIES } from '../data';
 import useStore from '../store/useStore';
+import Button from '../components/Button';
 
 export default function AppointmentBookingScreen() {
   const navigation = useNavigation();
@@ -15,6 +16,7 @@ export default function AppointmentBookingScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.pickerContainer}>
+        <Text style={styles.pickerTitle}>בחרו מקצוע רפאוי</Text>
         {MEDICAL_SPECIALTIES.map(item => (
           <Picker
             key={item.label}
@@ -25,8 +27,9 @@ export default function AppointmentBookingScreen() {
         ))}
       </View>
       <Button
+        containerStyle={styles.button}
         disabled={!selectedMedicalSpecialty}
-        title="חיפוש יומנים"
+        text="חיפוש יומנים"
         onPress={() => {
           navigation.navigate('DoctorCalendar');
         }}
@@ -38,18 +41,23 @@ export default function AppointmentBookingScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 15,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '700',
-    marginBottom: 24,
-    textAlign: 'center',
-    color: '#333',
+    padding: 20,
+    alignItems: 'center',
   },
   pickerContainer: {
     gap: 10,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 30,
+  },
+  pickerTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#333',
+    marginBottom: 20,
+  },
+  button: {
+    width: 200,
   },
 });
