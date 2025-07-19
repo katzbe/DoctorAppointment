@@ -1,13 +1,19 @@
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { Calendar, type DateData } from 'react-native-calendars';
+import { useCallback, useMemo, useState } from 'react';
 
 import Picker from '../components/Picker';
 import { RECOMMENDED_CALENDARS } from '../data';
 import useStore from '../store/useStore';
 import Button from '../components/Button';
 
+const INITIAL_DATE = new Date().toISOString().split('T')[0];
+
 export default function DoctorCalendarScreen() {
   const navigation = useNavigation();
+
+  const [selected, setSelected] = useState(INITIAL_DATE);
 
   const {
     selectedMedicalSpecialty,
@@ -17,8 +23,41 @@ export default function DoctorCalendarScreen() {
     setSelectedTime,
   } = useStore(state => state);
 
-  const calendar = RECOMMENDED_CALENDARS.find(
-    item => item.specialty === selectedMedicalSpecialty?.value,
+  const getMarkedDates = useCallback(() => {
+    const slots = RECOMMENDED_CALENDARS.find(
+      item => item.specialty === selectedMedicalSpecialty?.value,
+    )?.slots;
+
+    if (!slots) return {};
+
+    return slots.reduce<Record<string, { marked: boolean }>>((acc, date) => {
+      acc[date.date] = { marked: true };
+      return acc;
+    }, {});
+  }, [selectedMedicalSpecialty]);
+
+  const marked = useMemo(() => {
+    return {
+      ...getMarkedDates(),
+      [selected || '']: {
+        selected: true,
+      },
+    };
+  }, [selected, getMarkedDates]);
+
+  const handleDayPress = useCallback(
+    (day: DateData) => {
+      setSelected(day.dateString);
+
+      setSelectedTime(null);
+
+      const dateSlot = RECOMMENDED_CALENDARS.find(
+        item => item.specialty === selectedMedicalSpecialty?.value,
+      )?.slots.find(date => date.date === day.dateString);
+
+      setSelectedDateSlot(dateSlot ?? null);
+    },
+    [selectedMedicalSpecialty, setSelectedDateSlot, setSelectedTime],
   );
 
   return (
@@ -28,36 +67,30 @@ export default function DoctorCalendarScreen() {
           {selectedMedicalSpecialty?.label}
         </Text>
       </View>
+      <Calendar
+        style={styles.calendar}
+        initialDate={selected}
+        disableAllTouchEventsForDisabledDays
+        minDate={INITIAL_DATE}
+        onDayPress={handleDayPress}
+        markedDates={marked}
+      />
       <FlatList
-        inverted
         showsHorizontalScrollIndicator={false}
-        style={styles.datePicker}
-        contentContainerStyle={styles.datePickerContainer}
+        contentContainerStyle={styles.timePickerContainer}
+        style={styles.timePicker}
         horizontal
-        data={calendar?.slots}
-        keyExtractor={({ date }) => date}
+        inverted
+        data={selectedDateSlot?.times}
         renderItem={({ item }) => (
-          <Pressable
-            style={styles.dataPickerItem}
-            onPress={() => {
-              setSelectedDateSlot(item);
-              setSelectedTime('');
-            }}
-          >
-            <Text>{item.date}</Text>
-          </Pressable>
+          <Picker
+            key={item}
+            title={item}
+            isSelected={item === selectedTime}
+            onPress={() => setSelectedTime(item)}
+          />
         )}
       />
-      <View style={styles.timePicker}>
-        {selectedDateSlot?.times.map(time => (
-          <Picker
-            key={time}
-            title={time}
-            isSelected={time === selectedTime}
-            onPress={() => setSelectedTime(time)}
-          />
-        ))}
-      </View>
       <Button
         containerStyle={styles.button}
         text="זימון תור"
@@ -71,7 +104,6 @@ export default function DoctorCalendarScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
     padding: 20,
   },
   specialtyLabelCard: {
@@ -81,27 +113,23 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: 40,
   },
   specialtyLabelText: {
     fontSize: 18,
     color: '#333',
   },
-  datePicker: {
-    maxHeight: 80,
-    marginVertical: 20,
+  calendar: {
+    marginBottom: 20,
   },
-  dataPickerItem: {
-    padding: 10,
-    backgroundColor: '#C0E8FF',
-    borderRadius: 15,
-  },
-  datePickerContainer: {
-    gap: 15,
-    flexGrow: 1,
-    paddingVertical: 20,
-    justifyContent: 'center',
+  timePickerContainer: {
+    gap: 10,
     alignItems: 'center',
   },
-  button: { width: 200 },
-  timePicker: { gap: 10, marginBottom: 20 },
+  timePicker: {
+    maxHeight: 120,
+    marginBottom: 40,
+  },
+
+  button: { width: 200, alignSelf: 'center' },
 });
