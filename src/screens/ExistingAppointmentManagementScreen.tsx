@@ -1,9 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert, StyleSheet, View } from 'react-native';
-import useStore from '../store/useStore';
 import { CommonActions, useNavigation } from '@react-navigation/native';
+
+import useStore from '../store/useStore';
 import SummaryCard from '../components/SummaryCard';
 import Button from '../components/Button';
+import { Appointment } from '../types';
 
 export default function ExistingAppointmentManagementScreen() {
   const navigation = useNavigation();
@@ -18,22 +20,35 @@ export default function ExistingAppointmentManagementScreen() {
     userName,
   } = useStore(state => state);
 
+  async function handleOnRemoveAppointmentPress() {
+    const appointmentsJson = await AsyncStorage.getItem('@appointments');
+    const appointments: Appointment[] = appointmentsJson
+      ? JSON.parse(appointmentsJson)
+      : [];
+
+    const newAppointments = appointments.filter(a => a.userName !== userName);
+
+    await AsyncStorage.setItem(
+      '@appointments',
+      JSON.stringify(newAppointments),
+    );
+
+    setSelectedDateSlot(null);
+    setSelectedMedicalSpecialty(null);
+    setSelectedTime(null);
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: 'AppointmentBooking' }],
+      }),
+    );
+  }
+
   async function handleCancelAppointment() {
     Alert.alert('האם ברצונך לבטל את התור?', '', [
       {
         text: 'כן',
-        onPress: async () => {
-          await AsyncStorage.removeItem('appointment');
-          setSelectedDateSlot(null);
-          setSelectedMedicalSpecialty(null);
-          setSelectedTime(null);
-          navigation.dispatch(
-            CommonActions.reset({
-              index: 0,
-              routes: [{ name: 'AppointmentBooking' }],
-            }),
-          );
-        },
+        onPress: handleOnRemoveAppointmentPress,
       },
       { text: 'לא' },
     ]);

@@ -14,3 +14,10 @@ export type RecommendedCalendar = {
   specialty: string;
   slots: DateSlot[];
 };
+
+export type Appointment = {
+  userName: string;
+  medicalSpecialty: MedicalSpecialty;
+  dateSlot: DateSlot;
+  time: string;
+};

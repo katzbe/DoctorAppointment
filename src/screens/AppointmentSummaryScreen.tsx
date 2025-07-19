@@ -5,6 +5,7 @@ import { CommonActions, useNavigation } from '@react-navigation/native';
 import useStore from '../store/useStore';
 import Button from '../components/Button';
 import SummaryCard from '../components/SummaryCard';
+import { Appointment } from '../types';
 
 export default function AppointmentSummaryScreen() {
   const navigation = useNavigation();
@@ -12,13 +13,22 @@ export default function AppointmentSummaryScreen() {
     useStore(state => state);
 
   async function handleApproveClick() {
+    const storedAppointments = await AsyncStorage.getItem('@appointments');
+    const appointments: Appointment[] = storedAppointments
+      ? JSON.parse(storedAppointments)
+      : [];
+
+    const newAppointment = {
+      userName,
+      medicalSpecialty: selectedMedicalSpecialty,
+      dateSlot: selectedDateSlot,
+      time: selectedTime,
+    };
+
+    const updatedAppointments = [...appointments, newAppointment];
     await AsyncStorage.setItem(
-      'appointment',
-      JSON.stringify({
-        selectedMedicalSpecialty,
-        selectedDateSlot,
-        selectedTime,
-      }),
+      '@appointments',
+      JSON.stringify(updatedAppointments),
     );
     navigation.dispatch(
       CommonActions.reset({

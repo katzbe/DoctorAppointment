@@ -1,10 +1,11 @@
-import { StackActions, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { Dimensions, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import useStore from '../store/useStore';
 import { useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Button from '../components/Button';
+import { Appointment } from '../types';
 
 const { width } = Dimensions.get('window');
 
@@ -21,19 +22,29 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
 
   async function handleSubmit() {
-    const appointment = await AsyncStorage.getItem('appointment');
-    if (!appointment) {
-      navigation.dispatch(StackActions.replace('AppointmentBooking'));
-      return;
+    await AsyncStorage.setItem('@logged_user', userName);
+
+    const appointmentsJson = await AsyncStorage.getItem('@appointments');
+    const appointments: Appointment[] = appointmentsJson
+      ? JSON.parse(appointmentsJson)
+      : [];
+
+    const userAppointment = appointments.find(a => a.userName === userName);
+
+    if (userAppointment) {
+      setSelectedDateSlot(userAppointment.dateSlot);
+      setSelectedMedicalSpecialty(userAppointment.medicalSpecialty);
+      setSelectedTime(userAppointment.time);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'ExistingAppointmentManagement' }],
+      });
+    } else {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'AppointmentBooking' }],
+      });
     }
-
-    const parsedAppointment = JSON.parse(appointment);
-
-    setSelectedDateSlot(parsedAppointment.selectedDateSlot);
-    setSelectedMedicalSpecialty(parsedAppointment.selectedMedicalSpecialty);
-    setSelectedTime(parsedAppointment.selectedTime);
-
-    navigation.dispatch(StackActions.replace('ExistingAppointmentManagement'));
   }
 
   return (
@@ -47,6 +58,7 @@ export default function LoginScreen() {
           onChangeText={text => setUserName(text)}
         />
         <TextInput
+          secureTextEntry
           style={styles.input}
           placeholder="סיסמה"
           value={password}

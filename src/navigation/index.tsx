@@ -6,15 +6,21 @@ import AppointmentBookingScreen from '../screens/AppointmentBookingScreen';
 import DoctorCalendarScreen from '../screens/DoctorCalendarScreen';
 import AppointmentSummaryScreen from '../screens/AppointmentSummaryScreen';
 import ExistingAppointmentManagementScreen from '../screens/ExistingAppointmentManagementScreen';
+import SplashScreen from '../screens/SplashScreen';
+import SignOut from '../components/SignOut';
 
 export const RootStack = createNativeStackNavigator({
-  initialRouteName: 'Login',
+  initialRouteName: 'SplashScreen',
   screenOptions: {
     contentStyle: {
       backgroundColor: 'white',
     },
   },
   screens: {
+    SplashScreen: {
+      screen: SplashScreen,
+      options: { headerShown: false },
+    },
     Login: {
       screen: LoginScreen,
       options: {
@@ -25,6 +31,7 @@ export const RootStack = createNativeStackNavigator({
       screen: AppointmentBookingScreen,
       options: {
         headerTitle: 'זימון תור',
+        headerRight: SignOut,
       },
     },
     DoctorCalendar: {
@@ -43,6 +50,7 @@ export const RootStack = createNativeStackNavigator({
       screen: ExistingAppointmentManagementScreen,
       options: {
         headerTitle: 'ניהול תור קיים',
+        headerRight: SignOut,
       },
     },
   },
