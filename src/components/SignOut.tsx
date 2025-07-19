@@ -1,8 +1,8 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { Button } from 'react-native';
 
 import useStore from '../store/useStore';
+import { removeUser } from '../services/StorageService';
 
 export default function SignOut() {
   const navigation = useNavigation();
@@ -15,7 +15,7 @@ export default function SignOut() {
   } = useStore();
 
   async function handlePress() {
-    await AsyncStorage.removeItem('@logged_user');
+    removeUser();
     setSelectedDateSlot(null);
     setSelectedMedicalSpecialty(null);
     setSelectedTime(null);

@@ -1,10 +1,10 @@
 import { StyleSheet, View } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 
 import useStore from '../store/useStore';
 import Button from '../components/Button';
 import SummaryCard from '../components/SummaryCard';
+import { saveAppointment } from '../services/StorageService';
 import { Appointment } from '../types';
 
 export default function AppointmentSummaryScreen() {
@@ -13,23 +13,14 @@ export default function AppointmentSummaryScreen() {
     useStore(state => state);
 
   async function handleApproveClick() {
-    const storedAppointments = await AsyncStorage.getItem('@appointments');
-    const appointments: Appointment[] = storedAppointments
-      ? JSON.parse(storedAppointments)
-      : [];
-
     const newAppointment = {
       userName,
       medicalSpecialty: selectedMedicalSpecialty,
       dateSlot: selectedDateSlot,
       time: selectedTime,
-    };
+    } as Appointment;
 
-    const updatedAppointments = [...appointments, newAppointment];
-    await AsyncStorage.setItem(
-      '@appointments',
-      JSON.stringify(updatedAppointments),
-    );
+    await saveAppointment(newAppointment);
     navigation.dispatch(
       CommonActions.reset({
         index: 0,

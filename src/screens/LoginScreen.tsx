@@ -3,9 +3,8 @@ import { Dimensions, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import useStore from '../store/useStore';
 import { useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Button from '../components/Button';
-import { Appointment } from '../types';
+import { getUserAppointment, saveUser } from '../services/StorageService';
 
 const { width } = Dimensions.get('window');
 
@@ -22,15 +21,8 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
 
   async function handleSubmit() {
-    await AsyncStorage.setItem('@logged_user', userName);
-
-    const appointmentsJson = await AsyncStorage.getItem('@appointments');
-    const appointments: Appointment[] = appointmentsJson
-      ? JSON.parse(appointmentsJson)
-      : [];
-
-    const userAppointment = appointments.find(a => a.userName === userName);
-
+    await saveUser(userName);
+    const userAppointment = await getUserAppointment(userName);
     if (userAppointment) {
       setSelectedDateSlot(userAppointment.dateSlot);
       setSelectedMedicalSpecialty(userAppointment.medicalSpecialty);

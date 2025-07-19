@@ -1,11 +1,10 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert, StyleSheet, View } from 'react-native';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 
 import useStore from '../store/useStore';
 import SummaryCard from '../components/SummaryCard';
 import Button from '../components/Button';
-import { Appointment } from '../types';
+import { removeAppointment } from '../services/StorageService';
 
 export default function ExistingAppointmentManagementScreen() {
   const navigation = useNavigation();
@@ -21,17 +20,7 @@ export default function ExistingAppointmentManagementScreen() {
   } = useStore(state => state);
 
   async function handleOnRemoveAppointmentPress() {
-    const appointmentsJson = await AsyncStorage.getItem('@appointments');
-    const appointments: Appointment[] = appointmentsJson
-      ? JSON.parse(appointmentsJson)
-      : [];
-
-    const newAppointments = appointments.filter(a => a.userName !== userName);
-
-    await AsyncStorage.setItem(
-      '@appointments',
-      JSON.stringify(newAppointments),
-    );
+    await removeAppointment(userName);
 
     setSelectedDateSlot(null);
     setSelectedMedicalSpecialty(null);
