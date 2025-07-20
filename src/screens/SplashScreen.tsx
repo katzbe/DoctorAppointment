@@ -8,12 +8,7 @@ import { getUser, getUserAppointment } from '../services/StorageService';
 export default function SplashScreen() {
   const navigation = useNavigation();
 
-  const {
-    setUserName,
-    setSelectedDateSlot,
-    setSelectedMedicalSpecialty,
-    setSelectedTime,
-  } = useStore();
+  const { setUserName, setUserAppointment } = useStore();
 
   useEffect(() => {
     (async () => {
@@ -26,9 +21,7 @@ export default function SplashScreen() {
       const userAppointment = await getUserAppointment(loggedUser);
 
       if (userAppointment) {
-        setSelectedDateSlot(userAppointment.dateSlot);
-        setSelectedMedicalSpecialty(userAppointment.medicalSpecialty);
-        setSelectedTime(userAppointment.time);
+        setUserAppointment(userAppointment);
         navigation.reset({
           index: 0,
           routes: [{ name: 'ExistingAppointmentManagement' }],
@@ -40,13 +33,7 @@ export default function SplashScreen() {
         });
       }
     })();
-  }, [
-    navigation,
-    setUserName,
-    setSelectedDateSlot,
-    setSelectedMedicalSpecialty,
-    setSelectedTime,
-  ]);
+  }, [navigation, setUserName, setUserAppointment]);
 
   return (
     <View style={styles.container}>

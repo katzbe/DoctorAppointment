@@ -9,18 +9,23 @@ import { Appointment } from '../types';
 
 export default function AppointmentSummaryScreen() {
   const navigation = useNavigation();
-  const { selectedMedicalSpecialty, selectedDateSlot, selectedTime, userName } =
-    useStore(state => state);
+  const {
+    appointmentFormData,
+    setUserAppointment,
+    setAppointmentFormData,
+    userName,
+  } = useStore(state => state);
 
   async function handleApproveClick() {
     const newAppointment = {
       userName,
-      medicalSpecialty: selectedMedicalSpecialty,
-      dateSlot: selectedDateSlot,
-      time: selectedTime,
+      medicalSpecialty: appointmentFormData?.specialty,
+      dateSlot: appointmentFormData?.dateSlot,
+      time: appointmentFormData?.time,
     } as Appointment;
-
     await saveAppointment(newAppointment);
+    setUserAppointment(newAppointment);
+    setAppointmentFormData(null);
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
@@ -32,8 +37,8 @@ export default function AppointmentSummaryScreen() {
   return (
     <View style={styles.container}>
       <SummaryCard
-        medicalSpecialty={selectedMedicalSpecialty?.label || ''}
-        dateSlot={`${selectedDateSlot?.date} ${selectedTime}`}
+        medicalSpecialty={appointmentFormData?.specialty?.label || ''}
+        dateSlot={`${appointmentFormData?.dateSlot?.date} ${appointmentFormData?.time}`}
         patientName={userName}
       />
       <Button

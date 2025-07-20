@@ -1,33 +1,29 @@
 import { create } from 'zustand';
-import { DateSlot, MedicalSpecialty } from '../types';
+import { Appointment, AppointmentFormData } from '../types';
 
 type Store = {
   userName: string;
-  selectedTime: string | null;
-  selectedMedicalSpecialty: MedicalSpecialty | null;
-  selectedDateSlot: DateSlot | null;
-  setUserName: (userName: string) => void;
-  setSelectedTime: (time: string | null) => void;
-  setSelectedDateSlot: (dataSlot: DateSlot | null) => void;
-  setSelectedMedicalSpecialty: (
-    medicalSpecialty: MedicalSpecialty | null,
+  userAppointment: Appointment | null;
+  appointmentFormData: AppointmentFormData | null;
+  setAppointmentFormData: (
+    appointmentFormData: AppointmentFormData | null,
   ) => void;
+  setUserAppointment: (appointment: Appointment | null) => void;
+  setUserName: (userName: string) => void;
 };
 
 const useStore = create<Store>()(set => ({
   userName: '',
-  selectedTime: null,
-  selectedDateSlot: null,
-  selectedMedicalSpecialty: null,
+  userAppointment: null,
+  appointmentFormData: null,
   setUserName: userName => set(() => ({ userName })),
-  setSelectedTime: time =>
+  setAppointmentFormData: appointmentFormData =>
     set(() => ({
-      selectedTime: time,
+      appointmentFormData,
     })),
-  setSelectedDateSlot: dataSlot => set(() => ({ selectedDateSlot: dataSlot })),
-  setSelectedMedicalSpecialty: medicalSpecialty =>
+  setUserAppointment: appointment =>
     set(() => ({
-      selectedMedicalSpecialty: medicalSpecialty,
+      userAppointment: appointment,
     })),
 }));
 

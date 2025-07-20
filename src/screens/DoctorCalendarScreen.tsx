@@ -15,17 +15,13 @@ export default function DoctorCalendarScreen() {
 
   const [selected, setSelected] = useState(INITIAL_DATE);
 
-  const {
-    selectedMedicalSpecialty,
-    selectedDateSlot,
-    selectedTime,
-    setSelectedDateSlot,
-    setSelectedTime,
-  } = useStore(state => state);
+  const { appointmentFormData, setAppointmentFormData } = useStore(
+    state => state,
+  );
 
   const getMarkedDates = useCallback(() => {
     const slots = RECOMMENDED_CALENDARS.find(
-      item => item.specialty === selectedMedicalSpecialty?.value,
+      item => item.specialty === appointmentFormData?.specialty?.value,
     )?.slots;
 
     if (!slots) return {};
@@ -34,7 +30,7 @@ export default function DoctorCalendarScreen() {
       acc[date.date] = { marked: true };
       return acc;
     }, {});
-  }, [selectedMedicalSpecialty]);
+  }, [appointmentFormData]);
 
   const marked = useMemo(() => {
     return {
@@ -49,22 +45,20 @@ export default function DoctorCalendarScreen() {
     (day: DateData) => {
       setSelected(day.dateString);
 
-      setSelectedTime(null);
-
       const dateSlot = RECOMMENDED_CALENDARS.find(
-        item => item.specialty === selectedMedicalSpecialty?.value,
+        item => item.specialty === appointmentFormData?.specialty?.value,
       )?.slots.find(date => date.date === day.dateString);
 
-      setSelectedDateSlot(dateSlot ?? null);
+      setAppointmentFormData({ ...appointmentFormData, time: '', dateSlot });
     },
-    [selectedMedicalSpecialty, setSelectedDateSlot, setSelectedTime],
+    [appointmentFormData, setAppointmentFormData],
   );
 
   return (
     <View style={styles.container}>
       <View style={styles.specialtyLabelCard}>
         <Text style={styles.specialtyLabelText}>
-          {selectedMedicalSpecialty?.label}
+          {appointmentFormData?.specialty?.label}
         </Text>
       </View>
       <Calendar
@@ -81,20 +75,22 @@ export default function DoctorCalendarScreen() {
         style={styles.timePicker}
         horizontal
         inverted
-        data={selectedDateSlot?.times}
+        data={appointmentFormData?.dateSlot?.times}
         renderItem={({ item }) => (
           <Picker
             key={item}
             title={item}
-            isSelected={item === selectedTime}
-            onPress={() => setSelectedTime(item)}
+            isSelected={item === appointmentFormData?.time}
+            onPress={() =>
+              setAppointmentFormData({ ...appointmentFormData, time: item })
+            }
           />
         )}
       />
       <Button
         containerStyle={styles.button}
         text="זימון תור"
-        disabled={!selectedDateSlot || !selectedTime}
+        disabled={!appointmentFormData?.dateSlot || !appointmentFormData.time}
         onPress={() => navigation.navigate('AppointmentSummary')}
       />
     </View>

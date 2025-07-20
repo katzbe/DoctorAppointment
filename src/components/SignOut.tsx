@@ -7,18 +7,11 @@ import { removeUser } from '../services/StorageService';
 export default function SignOut() {
   const navigation = useNavigation();
 
-  const {
-    setSelectedDateSlot,
-    setSelectedMedicalSpecialty,
-    setSelectedTime,
-    setUserName,
-  } = useStore();
+  const { setAppointmentFormData, setUserName } = useStore();
 
   async function handlePress() {
     removeUser();
-    setSelectedDateSlot(null);
-    setSelectedMedicalSpecialty(null);
-    setSelectedTime(null);
+    setAppointmentFormData(null);
     setUserName('');
     navigation.reset({ index: 0, routes: [{ name: 'Login' }] });
   }

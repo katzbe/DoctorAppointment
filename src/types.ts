@@ -3,16 +3,20 @@ export type MedicalSpecialty = {
   value: string;
 };
 
-export type TimeSlot = string;
-
 export type DateSlot = {
   date: string;
-  times: TimeSlot[];
+  times: string[];
 };
 
 export type RecommendedCalendar = {
   specialty: string;
   slots: DateSlot[];
+};
+
+export type AppointmentFormData = {
+  specialty?: MedicalSpecialty;
+  dateSlot?: DateSlot;
+  time?: string;
 };
 
 export type Appointment = {

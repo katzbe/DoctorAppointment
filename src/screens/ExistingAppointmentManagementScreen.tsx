@@ -9,22 +9,13 @@ import { removeAppointment } from '../services/StorageService';
 export default function ExistingAppointmentManagementScreen() {
   const navigation = useNavigation();
 
-  const {
-    selectedMedicalSpecialty,
-    selectedDateSlot,
-    selectedTime,
-    setSelectedDateSlot,
-    setSelectedMedicalSpecialty,
-    setSelectedTime,
-    userName,
-  } = useStore(state => state);
+  const { userName, userAppointment, setUserAppointment } = useStore(
+    state => state,
+  );
 
   async function handleOnRemoveAppointmentPress() {
     await removeAppointment(userName);
-
-    setSelectedDateSlot(null);
-    setSelectedMedicalSpecialty(null);
-    setSelectedTime(null);
+    setUserAppointment(null);
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
@@ -46,8 +37,8 @@ export default function ExistingAppointmentManagementScreen() {
   return (
     <View style={styles.container}>
       <SummaryCard
-        medicalSpecialty={selectedMedicalSpecialty?.label || ''}
-        dateSlot={`${selectedDateSlot?.date} ${selectedTime}`}
+        medicalSpecialty={userAppointment?.medicalSpecialty.label || ''}
+        dateSlot={`${userAppointment?.dateSlot?.date} ${userAppointment?.time}`}
         patientName={userName}
       />
       <Button

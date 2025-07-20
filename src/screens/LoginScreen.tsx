@@ -10,13 +10,9 @@ const { width } = Dimensions.get('window');
 
 export default function LoginScreen() {
   const navigation = useNavigation();
-  const {
-    userName,
-    setUserName,
-    setSelectedDateSlot,
-    setSelectedMedicalSpecialty,
-    setSelectedTime,
-  } = useStore(state => state);
+  const { userName, setUserName, setUserAppointment } = useStore(
+    state => state,
+  );
 
   const [password, setPassword] = useState('');
 
@@ -24,9 +20,7 @@ export default function LoginScreen() {
     await saveUser(userName);
     const userAppointment = await getUserAppointment(userName);
     if (userAppointment) {
-      setSelectedDateSlot(userAppointment.dateSlot);
-      setSelectedMedicalSpecialty(userAppointment.medicalSpecialty);
-      setSelectedTime(userAppointment.time);
+      setUserAppointment(userAppointment);
       navigation.reset({
         index: 0,
         routes: [{ name: 'ExistingAppointmentManagement' }],
